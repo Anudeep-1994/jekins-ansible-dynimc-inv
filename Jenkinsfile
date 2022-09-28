@@ -17,7 +17,6 @@ pipeline {
       }
     }
      
-   
     //Run the playbook
     stage('RunPlaybook') {
       steps {
