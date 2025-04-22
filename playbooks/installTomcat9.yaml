@@ -1,38 +1,38 @@
-- hosts: all
+- hosts: tomcatservers
   become: true
   tasks:
     - name: Install Java
       yum:
-        name: java-1.8.0-openjdk
+        name: java-11-openjdk-devel 
         state: present
     - name: add tomcatuser
       user:
         name: tomcat
         shell: /sbin/nologin
-    - name: get_installer
+    - name: Tomcat-9 Installation
       get_url:
-        url: https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.76/bin/apache-tomcat-7.0.76.tar.gz
+        url: https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.74/bin/apache-tomcat-9.0.74.tar.gz
         dest: /tmp/
     - name: copy
       copy:
-        src: /tmp/apache-tomcat-7.0.76.tar.gz
+        src: /tmp/apache-tomcat-9.0.74.tar.gz
         dest: /usr/local/
         remote_src: yes
-    - name: install
+    - name: Unpacking the archive
       unarchive:
-        src: /usr/local/apache-tomcat-7.0.76.tar.gz
+        src: /usr/local/apache-tomcat-9.0.74.tar.gz
         dest: /usr/local
         remote_src: yes
     - name: Change file ownership, group and permissions
       file:
-        path: /usr/local/apache-tomcat-7.0.76
+        path: /usr/local/apache-tomcat-9.0.74
         owner: tomcat
         group: tomcat
         recurse: yes
         state: directory
-    - name: make tomcat symbolic
+    - name: make tomcat symbolic link
       file:
-        src: /usr/local/apache-tomcat-7.0.76
+        src: /usr/local/apache-tomcat-9.0.74
         dest: /usr/local/tomcat7
         owner: tomcat
         group: tomcat
@@ -47,17 +47,17 @@
         insertafter:
         block: |
           [Unit]
-          Description = Apache Tomcat 7
+          Description = Apache Tomcat 9
           After = syslog.target network.target
           [Service]
           User = tomcat
           Group = tomcat
           Type = oneshot
-          PIDFile =/usr/local/apache-tomcat-7.0.76/tomcat.pid
+          PIDFile =/usr/local/apache-tomcat-9.0.74/tomcat.pid
           RemainAfterExit = yes
-          ExecStart =/usr/local/apache-tomcat-7.0.76/bin/startup.sh
-          ExecStop =/usr/local/apache-tomcat-7.0.76/bin/shutdown.sh
-          ExecReStart =/usr/local/apache-tomcat-7.0.76/bin/shutdown.sh;/usr/local/apache-tomcat-7.0.76/bin/startup.sh
+          ExecStart =/usr/local/apache-tomcat-9.0.74/bin/startup.sh
+          ExecStop =/usr/local/apache-tomcat-9.0.74/bin/shutdown.sh
+          ExecReStart =/usr/local/apache-tomcat-9.0.74/bin/shutdown.sh;/usr/local/apache-tomcat-9.0.74/bin/startup.sh
           [Install]
           WantedBy = multi-user.target
     - name: chmod 755 tomcat.service
